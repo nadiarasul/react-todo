@@ -1,1 +1,57 @@
 @import 'setup';
+
+$mainColour: #FFBDCB;
+$bodyBackground: #415159;
+
+body{
+	background: $bodyBackground;
+	font-family: 'Inconsolata';
+	padding-top: 50px;
+	color: #fff;
+}
+
+.app{
+	width: 50%;
+	margin: 0 auto;
+}
+
+form{
+	background: $mainColour;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	h1{
+		font-weight: 400;
+	}
+	input{
+		text-align: center;
+		background: darken($mainColour, 10%);
+		border: none;
+		padding: 20px;
+		border-radius: 10px;
+		color: #fff;
+	}
+	::-webkit-input-placeholder{
+		color: #fff;
+	}
+	input:focus{
+		outline: none;
+		border: 2px solid #fff;
+	}
+}
+
+ul{
+	background: #fff;
+	color: $bodyBackground;
+	margin: 0;
+	padding: 20px;
+	font-size: 20px;
+	li{
+		list-style: none;
+		cursor: pointer;
+		padding: 10px;
+		i{
+			margin-right: 5px;
+		}
+	}
+}

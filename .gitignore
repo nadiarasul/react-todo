@@ -1,3 +1,4 @@
 node_modules
 app.min.js.map
 style.css.map
+.DS_Store

@@ -13,16 +13,6 @@ PSEUDOCODE FOR OUR REACT TO DO LIST
 10. Working on our ToDo component, let's grab the value out of the props and have it display the actual to do item we want to display. 
 11. Finally, lets add some UX by having an onClick method that calls a markAsDone method that will switch out our font awesome icon for the checked one. 
 
-(if we're running out of time, here's the code to go in that method - we're doing the toggle class with vanilla JS here!)
-var checkbox = ReactDOM.findDOMNode(this).children[0];
-		if(checkbox.classList.contains('fa-circle-thin')){
-			checkbox.classList.remove('fa-circle-thin');
-			checkbox.classList.add('fa-check-circle');
-		} else{
-			checkbox.classList.remove('fa-check-circle');
-			checkbox.classList.add('fa-circle-thin');
-		}
-
 */
 
 
@@ -30,36 +20,129 @@ var checkbox = ReactDOM.findDOMNode(this).children[0];
 // because it was listed as a dependency in our package.json file, when we run npm install these libraries are added to our node modules folder. 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var AutosizeInput = require('react-input-autosize');
 
+var ReactFireMixin = require('reactfire');
+
+var Catalyst = require('react-catalyst');
 
 // this creates our first react component. All you need to make it go is to write a render function that renders some JSX. 
+
 var App = React.createClass({
-	render: function(){
-		//notice how there are some differences between html and jsx - here, we have to use className instead of class for example. also there MUST be a top level parent element. 
-		return (
-			<div action="" className="app">
-				<form onSubmit={this.addItem}>
-					<h1><i className="fa fa-hand-peace-o" aria-hidden="true"></i> Do</h1>
-					<input type="text" placeholder="Add a new to do..." ref="item"/>
-				</form>
-				<ul>
-					<li>
-						<i className="fa fa-circle-thin" aria-hidden="true"></i>
-						a to do item
-					</li>
-				</ul>
-			</div>
-			);
-	} 
+  mixins: [ReactFireMixin],
+
+  getInitialState: function() {
+    return {
+      items: [],
+      text: '',
+      name: 'enter name',
+      editName: false,
+    };
+  },
+  // componentWillUpdate(nextProps, nextState) {
+  //   localStorage.setItem('name', JSON.stringify(nextState.name));
+  // },
+
+  componentWillMount: function() {
+    var firebaseRef = firebase.database().ref('todoApp/items');;
+    this.bindAsArray(firebaseRef.limitToLast(25), 'items');
+
+    var localStorageRef = localStorage.getItem('name');
+
+    if(localStorageRef) {
+      // update our component state to reflect what is in localStorage
+      this.setState({
+        name : localStorageRef
+      });
+    }
+  },
+
+  onChange: function(e) {
+    this.setState({text: e.target.value});
+  },
+
+  removeItem: function(key) {
+    var firebaseRef = firebase.database().ref('todoApp/items');;
+    firebaseRef.child(key).remove();
+  },
+
+  handleSubmit: function(e) {
+    e.preventDefault();
+    if (this.state.text && this.state.text.trim().length !== 0) {
+      this.firebaseRefs['items'].push({
+        text: this.state.text
+      });
+      this.setState({
+        text: ''
+      });
+    }
+  },
+  updateInputValue (input, event) {
+  	var newState = {};
+  	newState[input] = event.target.value;
+  	this.setState(newState);
+  }, 
+  updateName:function(e){
+  	if(e.which === 13) {
+      localStorage.setItem('name',this.state.name);
+  		this.setState({
+  			editName: false
+  		});
+  	}
+  },
+  showUpdate: function() {
+  	this.setState({
+  		editName: true
+  	});
+  },
+  render: function() {
+  	var displayName = (
+  		<span onDoubleClick={this.showUpdate}>{this.state.name}</span>
+  	);
+  	if(this.state.editName) {
+  		displayName = (
+  			<AutosizeInput
+  				value={this.state.name}
+  				onChange={this.updateInputValue.bind(this, 'name')}
+  				onKeyPress={this.updateName}
+  				style={{padding: 5 }}
+  				inputStyle={{ background: 'transparent', border: 0, borderBottom: '3px solid #FFF', padding:'0 15px', outline: 'none', color: '#FFF'}}
+  			/>
+  		);
+  	}
+    return (
+      <div className="app">
+      	<h1>Welcome {displayName}!</h1>
+        <form onSubmit={ this.handleSubmit }>
+        <h1><i className="fa fa-hand-peace-o" aria-hidden="true"></i> To Do</h1>
+          <input onChange={ this.onChange } value={ this.state.text } />
+        </form>
+        <TodoList items={ this.state.items } removeItem={ this.removeItem } />
+      </div>
+    );
+  }
 });
 
+var TodoList = React.createClass({	
+  render: function() {
+    var _this = this;
+    var createItem = function(item, index) {
+      return (
+        <li key={index} >
+          { item.text }
+          <span onClick={ _this.props.removeItem.bind(null, item['.key']) }
+                style={{ color: 'red', marginLeft: '10px' }}>
+            x
+          </span>
+        </li>
+      );
+    };
+    return <ul>{ this.props.items.map(createItem) }</ul>;
+  }
+});
 
+ReactDOM.render(<App />, document.getElementById('app'));
 
-
-// to put it on the page, this function takes 2 params: the component as well as the DOM element to append it to. 
-
-
-ReactDOM.render(<App/>, document.getElementById('app'));
 
 
 

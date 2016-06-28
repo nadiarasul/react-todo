@@ -13,6 +13,7 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
+    "firebase": "^3.0.5",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-buffer": "0.0.2",
@@ -23,8 +24,12 @@
     "gulp-sass": "^2.2.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.3",
+    "re-base": "^1.5.1",
     "react": "^0.14.7",
+    "react-catalyst": "^0.3.1",
     "react-dom": "^0.14.7",
+    "react-input-autosize": "^1.0.0",
+    "reactfire": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
 }

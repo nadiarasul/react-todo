@@ -1,22 +1,4 @@
-
-/*
-PSEUDOCODE FOR OUR REACT TO DO LIST
-1. look over the code we have so far. 
-2. add an initial state to the app component that returns an ARRAY of toDos. 
-3. move the UL to it's own component called ToDoList. this component will have a prop which is equal to the toDoList from our app state.
-4. We want to be able to grab data from the form on submit, so let's add a method called addItem that uses the 'ref' attribute to get the value of what the user typed in. let's start by console logging the value. 
-5. We also want to check to see if the user didn't enter anything, and only do something if an actual value was entered. 
-6. IF an actual value was entered, we want to update our application state to include this new item. We can do this using this.setState()
-7. Let's check if all of this is working by going into react dev tools and seeing if state is being updated, and seeing if the data is being passed down as a prop to our ToDoList component. 
-8. On to the ToDoList. We have an array of to dos that we want to display on the page - so let's map through it and return a ToDo which can be another component! We can call our map method on the array right inside our JSX with {}
-9. when mapping through an array in react, we need to add a key property with a unique value so that react can distinguish between components. let's also pass the value (string) as a prop so that we can populate the text of each to do item.
-10. Working on our ToDo component, let's grab the value out of the props and have it display the actual to do item we want to display. 
-11. Finally, lets add some UX by having an onClick method that calls a markAsDone method that will switch out our font awesome icon for the checked one. 
-
-*/
-
-
-// include the react module in our file so we can reference it's methods. 
+// Include the react module in our file so we can reference it's methods. 
 // because it was listed as a dependency in our package.json file, when we run npm install these libraries are added to our node modules folder. 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -39,13 +21,10 @@ var App = React.createClass({
       editName: false,
     };
   },
-  // componentWillUpdate(nextProps, nextState) {
-  //   localStorage.setItem('name', JSON.stringify(nextState.name));
-  // },
 
   componentWillMount: function() {
     var firebaseRef = firebase.database().ref('todoApp/items');;
-    this.bindAsArray(firebaseRef.limitToLast(25), 'items');
+    this.bindAsArray(firebaseRef.limitToLast(20), 'items');
 
     var localStorageRef = localStorage.getItem('name');
 
@@ -97,7 +76,7 @@ var App = React.createClass({
   },
   render: function() {
   	var displayName = (
-  		<span onDoubleClick={this.showUpdate}>{this.state.name}</span>
+  		<span className="username" onClick={this.showUpdate} onTouchStart={this.showUpdate}>{this.state.name}</span>
   	);
   	if(this.state.editName) {
   		displayName = (
@@ -112,12 +91,14 @@ var App = React.createClass({
   	}
     return (
       <div className="app">
-      	<h1>Welcome {displayName}!</h1>
-        <form onSubmit={ this.handleSubmit }>
-        <h1><i className="fa fa-hand-peace-o" aria-hidden="true"></i> To Do</h1>
-          <input onChange={ this.onChange } value={ this.state.text } />
-        </form>
-        <TodoList items={ this.state.items } removeItem={ this.removeItem } />
+      	<h1 className="welcome">Welcome, {displayName}!</h1>
+        <div className="content">
+          <form onSubmit={ this.handleSubmit }>
+           <h1><i className="fa fa-star" aria-hidden="true"></i> What do you need to do today?</h1>
+            <input onChange={ this.onChange } value={ this.state.text } />
+          </form>
+          <TodoList items={ this.state.items } removeItem={ this.removeItem } />
+        </div>
       </div>
     );
   }
@@ -131,7 +112,7 @@ var TodoList = React.createClass({
         <li key={index} >
           { item.text }
           <span onClick={ _this.props.removeItem.bind(null, item['.key']) }
-                style={{ color: 'red', marginLeft: '10px' }}>
+                className="delete">
             x
           </span>
         </li>

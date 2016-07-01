@@ -56,11 +56,13 @@ var App = React.createClass({
       });
     }
   },
+
   updateInputValue (input, event) {
   	var newState = {};
   	newState[input] = event.target.value;
   	this.setState(newState);
   }, 
+
   updateName:function(e){
   	if(e.which === 13) {
       localStorage.setItem('name',this.state.name);
@@ -69,6 +71,7 @@ var App = React.createClass({
   		});
   	}
   },
+  
   showUpdate: function() {
   	this.setState({
   		editName: true
